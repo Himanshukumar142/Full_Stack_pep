@@ -1,35 +1,69 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [backendMessage, setBackendMessage] = useState("");
+  const [name, setName] = useState("");
+  const [responseMessage, setResponseMessage] = useState("");
+
+  const getMessageFromBackend = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/message`);
+      const data = await response.json();
+      setBackendMessage(data.message);
+    } catch (error) {
+      setBackendMessage("Failed to connect backend");
+      console.log(error.message);
+    }
+  };
+
+  const sendNameToBackend = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`${API_URL}/api/message`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+      });
+
+      const data = await response.json();
+      setResponseMessage(data.message);
+    } catch (error) {
+      setResponseMessage("Failed to send data to backend");
+      console.log(error.message);
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="container">
+      <h1>Frontend + Backend Starter</h1>
+      <p className="subtitle">React frontend and Express backend connection demo</p>
+
+      <div className="section">
+        <h2>GET Request Demo</h2>
+        <button onClick={getMessageFromBackend}>Get Message From Backend</button>
+        <p>{backendMessage}</p>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+
+      <div className="section">
+        <h2>POST Request Demo</h2>
+        <form onSubmit={sendNameToBackend} className="form">
+          <input
+            type="text"
+            placeholder="Enter your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <button type="submit">Send To Backend</button>
+        </form>
+        <p>{responseMessage}</p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
