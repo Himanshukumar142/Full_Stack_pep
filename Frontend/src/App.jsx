@@ -9,7 +9,7 @@ function App() {
 
   const getMessageFromBackend = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/message`);
+      const response = await fetch(`${API_URL || ''}/api/message`);
       const data = await response.json();
       setBackendMessage(data.message);
     } catch (error) {
@@ -22,7 +22,7 @@ function App() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${API_URL}/api/message`, {
+      const response = await fetch(`${API_URL || ''}/api/message`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
